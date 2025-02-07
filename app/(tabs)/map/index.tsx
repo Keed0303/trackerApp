@@ -14,8 +14,8 @@ import * as Location from 'expo-location';
 export default function MapScreen() {
   const [location, setLocation] = useState<  Location.LocationObject | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-	const apiKey = "5ee76e07-22f8-4b65-a1ec-9eb1fbdafaee";
+  const apiKey = "5ee76e07-22f8-4b65-a1ec-9eb1fbdafaee";
+  const mapbox = 'pk.eyJ1IjoibW9uYWdwYWxhIiwiYSI6ImNsam05c3pjYzB4b3gzaG80cnQ1enZuazYifQ.XOk5I-h3sKM-E639D4I0DQ';
 	const mapHtml = `
     <!DOCTYPE html>
     <html lang="en">
@@ -62,39 +62,6 @@ export default function MapScreen() {
             zoom: 18
           }),
         });
-
-
-        // Create a circle feature
-        const circle = new ol.Feature({
-          geometry: new ol.geom.Circle(
-            ol.proj.fromLonLat(['${location?.coords.longitude}', '${location?.coords.latitude}']), // Center of the circle (longitude, latitude)
-            1 // Radius in meters
-          )
-        });
-
-        // Style the circle
-        const circleStyle = new ol.style.Style({
-          fill: new ol.style.Fill({
-            color: 'rgba(255, 0, 0, 0.2)' // Red color with transparency
-          }),
-          stroke: new ol.style.Stroke({
-            color: 'rgba(255, 0, 0, 1)', // Solid red border
-            width: 2
-          })
-        });
-
-        circle.setStyle(circleStyle);
-
-        const vectorSource = new ol.source.Vector({
-          features: [circle]
-        });
-
-        const vectorLayer = new ol.layer.Vector({
-          source: vectorSource
-        });
-
-        map.addLayer(vectorLayer);
-     
       </script>
     </body>
     </html>

@@ -1,74 +1,126 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import {
+	Image,
+	StyleSheet,
+	Platform,
+	View,
+	Text,
+	StatusBar,
+	TouchableOpacity,
+} from "react-native";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { HelloWave } from "@/components/HelloWave";
+import ParallaxScrollView from "@/components/ParallaxScrollView";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { useCallback, useMemo, useRef, useState } from "react";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Link } from "expo-router";
+import { PaperProvider, Button, Appbar  } from "react-native-paper";
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+	const [money, setMoney] = useState(0);
+
+	return (
+		<>
+      <PaperProvider>
+      <Appbar.Header mode="center-aligned">
+        <Appbar.Content title="Money Tracker" />
+      </Appbar.Header>
+
+				<SafeAreaProvider>
+					<SafeAreaView style={styles.container}>
+						<StatusBar
+							animated={true}
+							backgroundColor='white'
+							barStyle='dark-content'
+							showHideTransition='none'
+							hidden={false}
+						/>
+
+						<View style={styles.cardContainer}>
+							<Text style={styles.moneyText}>{"₱" + money}</Text>
+							<Text>Available Balance</Text>
+						</View>
+
+						<View style={styles.addController}>
+							<View style={styles.addWrapper}>
+								<View>
+									<Link href='/modal/addIncome' asChild>
+										<TouchableOpacity style={styles.addIncomeButton}>
+											<Text>Add Income</Text>
+										</TouchableOpacity>
+									</Link>
+								</View>
+
+								<View>
+									<Link href='/modal/addExpenses' asChild>
+										<TouchableOpacity style={styles.addExpensesButton}>
+											<Text>Add Expenses</Text>
+										</TouchableOpacity>
+									</Link>
+								</View>
+							</View>
+						</View>
+					</SafeAreaView>
+				</SafeAreaProvider>
+			</PaperProvider>
+		</>
+	);
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+	titleContainer: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 8,
+	},
+	stepContainer: {
+		gap: 8,
+		marginBottom: 8,
+	},
+	reactLogo: {
+		height: 178,
+		width: 290,
+		bottom: 0,
+		left: 0,
+		position: "absolute",
+	},
+	cardContainer: {
+		backgroundColor: "#2f64f7",
+		height: 125,
+		borderRadius: 16,
+		padding: 16,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	container: {
+		padding: 16,
+	},
+	moneyText: {
+		fontSize: 40,
+		color: "#ffffff",
+	},
+	addController: {
+		padding: 16,
+		marginVertical: 16,
+		backgroundColor: "#ffffff",
+		borderRadius: 25,
+	},
+	addWrapper: {
+		flexDirection: "row",
+		justifyContent: "space-around",
+	},
+	addIncomeButton: {},
+	addExpensesButton: {},
+	Container: {
+		flex: 1,
+	},
+	contentContainer: {
+		flex: 1,
+		padding: 36,
+		alignItems: "center",
+	},
 });
