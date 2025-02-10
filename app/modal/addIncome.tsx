@@ -8,7 +8,7 @@ import {
 	Text,
 	TextInput,
 } from "react-native-paper";
-import firestore from "@react-native-firebase/firestore";
+import firestore, { getDoc } from "@react-native-firebase/firestore";
 
 interface Transaction {
 	amount: string;
@@ -26,33 +26,28 @@ const addIncome = () => {
 
 
 	const _goBack = () => {
-		router.replace("/(tabs)");
+		router.replace("/(tabs)/home");
 	};
-
-
 
 	const add = () => {
 		setLoading(true);
-		firestore()
-			.collection("income")
-			.add({
-				amount: amount,
-				purpose: purpose,
-				date: new Date(),
-			})
-			.then((response) => {
-				if (response) {
-					setLoading(false);
-					Alert.alert('Success', 'Trasaction has successfuly save');
-					router.replace("/(tabs)");
-				}
-			})
-			.catch((error) => {
-				setLoading(false);
-				Alert.alert('Failed', 'Please try again!');
-				router.replace("/(tabs)");
-			});
+		firestore().collection("income").add({
+			amount: amount,
+			purpose: purpose,
+			date: new Date(),
+		}).then((response) => {
+			if (!response) return;
+			setLoading(false);
+			Alert.alert('Success', 'Trasaction has successfuly save');
+			router.replace("/(tabs)/home");
+		})
+		.catch((error) => {
+			setLoading(false);
+			Alert.alert('Failed', 'Please try again!');
+			router.replace("/(tabs)/home");
+		});
 	};
+
 
 	const getCurrentDate=()=>{
  
@@ -64,6 +59,7 @@ const addIncome = () => {
 			// You can turn it in to your desired format
 			return date + '-' + month + '-' + year;//format: d-m-y;
 	}
+	
 	useEffect(() => {
 		console.log('date', date);
 		

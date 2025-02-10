@@ -5,7 +5,7 @@ import { Appbar, Button, Drawer, Text, TextInput } from "react-native-paper";
 const addExpenses = () => {
 	const [text, setText] = useState<string>("");
 	const _goBack = () => {
-		router.replace("/(tabs)");
+		router.replace("/(tabs)/home");
 	};
 
 	return (
