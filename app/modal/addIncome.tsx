@@ -1,60 +1,73 @@
 import { router, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
-import { Appbar, Button, Drawer, Text, TextInput } from "react-native-paper";
-import firestore, { firebase } from '@react-native-firebase/firestore';
+import { Alert, StyleSheet, View } from "react-native";
+import {
+	ActivityIndicator,
+	Appbar,
+	Button,
+	Text,
+	TextInput,
+} from "react-native-paper";
+import firestore from "@react-native-firebase/firestore";
 
 interface Transaction {
-  id: string;
-  amount: string;
-  purpose: string;
-  date: string;
-  createdAt: any; // or use proper Firebase Timestamp type if needed
+	amount: string;
+	purpose: string;
+	date: Date;
+	createdAt: any; // or use proper Firebase Timestamp type if needed
 }
 
 // Get user document with an ID of ABC
 const addIncome = () => {
 	const [amount, setAmount] = useState("");
 	const [purpose, setPurpose] = useState("");
-	const [date, setDate] = useState("");
-	const [transaction, setTransaction] = useState<Transaction[]>([]);
+	const [loading, setLoading] = useState(false);
+	const date = new Date();
+
 
 	const _goBack = () => {
 		router.replace("/(tabs)");
-  };
-  
-	const addIncome = async () => {
-			try {
-				await firestore().collection('income').doc('customId').set({
-					id: 1,
-					amount: amount, 
-					purpose: purpose, 
-					date: date
-				});
-				alert('success');
-			} catch (error) {
-				alert('error');
-				console.error('Error adding user: ', error);
-			}
-	}
+	};
 
-	// useEffect(() => {
-	// 	const listenForUsers = () => {
-	// 		const subscriber = firestore()
-	// 			.collection('income')
-	// 			.onSnapshot((querySnapshot) => {
-	// 				querySnapshot.forEach((doc) => {
-	// 					console.log('User ID: ', doc.id, 'Data: ', doc.data());
-	// 				});
-	// 			});
+
+
+	const add = () => {
+		setLoading(true);
+		firestore()
+			.collection("income")
+			.add({
+				amount: amount,
+				purpose: purpose,
+				date: new Date(),
+			})
+			.then((response) => {
+				if (response) {
+					setLoading(false);
+					Alert.alert('Success', 'Trasaction has successfuly save');
+					router.replace("/(tabs)");
+				}
+			})
+			.catch((error) => {
+				setLoading(false);
+				Alert.alert('Failed', 'Please try again!');
+				router.replace("/(tabs)");
+			});
+	};
+
+	const getCurrentDate=()=>{
+ 
+			var date = new Date().getDate();
+			var month = new Date().getMonth() + 1;
+			var year = new Date().getFullYear();
+
+			//Alert.alert(date + '-' + month + '-' + year);
+			// You can turn it in to your desired format
+			return date + '-' + month + '-' + year;//format: d-m-y;
+	}
+	useEffect(() => {
+		console.log('date', date);
 		
-	// 		// Unsubscribe from updates when no longer needed
-	// 		return () => subscriber();
-	// 	};
-		
-	// 	// Call this function in a useEffect hook or similar
-	// 	listenForUsers();
-	// }, []);
+	}, []);
 
 	return (
 		<>
@@ -79,15 +92,18 @@ const addIncome = () => {
 					<TextInput
 						label='Date'
 						style={styles.input}
-						value={date}
-						onChangeText={(text) => setDate(text)}
+						value={getCurrentDate().toString()}
+						disabled
 					/>
-
-					<Button mode='contained' style={styles.buttonSubmit} onPress={addIncome}>
-						<Text variant='bodyLarge' style={styles.ButtonText}>
-							Submit
-						</Text>
-					</Button>
+					{loading == true ? (
+						<ActivityIndicator style={{ marginTop: 10 }} />
+					) : (
+						<Button mode='contained' style={styles.buttonSubmit} onPress={add}>
+							<Text variant='bodyLarge' style={styles.ButtonText}>
+								Submit
+							</Text>
+						</Button>
+					)}
 				</View>
 			</View>
 		</>

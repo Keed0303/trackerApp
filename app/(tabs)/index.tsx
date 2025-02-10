@@ -6,6 +6,7 @@ import {
 	Text,
 	StatusBar,
 	TouchableOpacity,
+	FlatList,
 } from "react-native";
 
 import { HelloWave } from "@/components/HelloWave";
@@ -13,15 +14,50 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Link } from "expo-router";
 import { PaperProvider, Button, Appbar  } from "react-native-paper";
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import firestore from '@react-native-firebase/firestore';
+
+type Income = {
+	amount: number,
+	purpose: string
+}
 
 export default function HomeScreen() {
-	const [money, setMoney] = useState(0);
+	const [incomeData, setIncomeData] = useState<Income[]>([]);
+
+
+
+	// getTotalamount function 
+	// this return the total sum of amount
+	const getTotalAmount = (): number => {
+		let total: number  = 0;
+		incomeData.forEach((item: Income) => {
+			console.log('item', item);
+			
+			total = total + Number(item.amount );
+		});
+		return total;
+	}
+
+	useEffect(() => {
+		const subscriber = firestore()
+			.collection('income')
+			.onSnapshot(querySnapshot => {
+				const data: any = [];
+				querySnapshot.forEach(documentSnapshot => {
+					data.push({ id: documentSnapshot.id, ...documentSnapshot.data() });
+				});
+				setIncomeData(data);
+			});
+
+
+		return () => subscriber();
+	}, []);
 
 	return (
 		<>
@@ -39,9 +75,9 @@ export default function HomeScreen() {
 							showHideTransition='none'
 							hidden={false}
 						/>
-
+					
 						<View style={styles.cardContainer}>
-							<Text style={styles.moneyText}>{"₱" + money}</Text>
+							<Text style={styles.moneyText}>₱{getTotalAmount()}</Text>
 							<Text>Available Balance</Text>
 						</View>
 
@@ -63,6 +99,21 @@ export default function HomeScreen() {
 									</Link>
 								</View>
 							</View>
+						</View>
+
+						<View style={{ backgroundColor: 'white', padding: 16, borderRadius: 25 }}>
+							<View>
+								<Text style={{ fontSize: 21, fontWeight: 'bold' }}>Transaction</Text>
+							</View>
+							<FlatList
+								data={incomeData}
+									renderItem={({ item }) =>
+										<View style={styles.listContainer}>
+											<Text>{item.purpose}</Text>
+											<Text style={{ color: 'green', fontWeight: '700' }}>+ {item.amount}</Text>
+										</View>
+									}
+							/>
 						</View>
 					</SafeAreaView>
 				</SafeAreaProvider>
@@ -123,4 +174,13 @@ const styles = StyleSheet.create({
 		padding: 36,
 		alignItems: "center",
 	},
+
+	listContainer: 	{
+		flexDirection: 'row',
+		backgroundColor: 'white',
+		paddingVertical: 16,
+		marginVertical: 5,
+		borderRadius: 10,
+		justifyContent: 'space-between'
+	}
 });
