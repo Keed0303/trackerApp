@@ -1,36 +1,50 @@
-import { Income } from '@/Types/Income'
-import React from 'react'
-import { FlatList, StyleSheet, View } from 'react-native'
-import { Text } from 'react-native-paper'
+import { Income } from "@/Types/Income";
+import { Link } from "expo-router";
+import React, { useState } from "react";
+import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import { HoverEffect } from "react-native-gesture-handler";
+import { Text } from "react-native-paper";
 
 interface ListItemProps {
-  data: Income[];
+	data: Income;
 }
 
 const ListItem = ({ data }: ListItemProps) => {
-  return (
-      <FlatList
-        data={data}
-          renderItem={({ item }) =>
-            <View style={styles.listContainer}>
-              <Text>{item.purpose}</Text>
-              <Text style={{ color: 'green', fontWeight: '700' }}>+ {item.amount}</Text>
-            </View>
-          }
-      />
-  )
-}
+	const [isPressed, setIsPressed] = useState(false);
+
+	return (
+		<Link
+			href={{
+				pathname: "/(tabs)/home/[details]",
+				params: { id: data.id, details: data.id },
+			}}
+			onPressIn={() => setIsPressed(true)}
+			onPressOut={() => setIsPressed(false)}
+			style={[styles.listContainer, isPressed && styles.pressed]}>
+			<View style={styles.listWrapper}>
+				<Text>{data.purpose}</Text>
+				<Text style={{ color: "green", fontWeight: "700" }}>
+					+ {data.amount}
+				</Text>
+			</View>
+		</Link>
+	);
+};
 
 const styles = StyleSheet.create({
-	listContainer: 	{
-		flexDirection: 'row',
-		backgroundColor: '#f3f3f3',
+	listContainer: {
+		backgroundColor: "#f3f3f3",
 		padding: 16,
-		marginVertical: 5,
 		borderRadius: 10,
-		justifyContent: 'space-between'
-	}
-	
-})
+	},
+	listWrapper: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		width: "100%",
+	},
+	pressed: {
+		backgroundColor: "#e3e3e3",
+	},
+});
 
-export default ListItem
+export default ListItem;
