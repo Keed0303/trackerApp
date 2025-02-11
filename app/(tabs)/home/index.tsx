@@ -9,7 +9,6 @@ import {
 	FlatList,
 } from "react-native";
 
-import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -111,7 +110,9 @@ export default function HomeScreen() {
 								Transaction
 							</Text>
 						</View>
-						<ListItem data={incomeData} />
+							{incomeData.map((item, id	) => (
+								<ListItem data={item} key={id} />
+							))}
 					</View>
 
 				
