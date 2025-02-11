@@ -1,5 +1,7 @@
 
 export type Income = {
   amount: number,
-  purpose: string
+  purpose: string,
+  id: string,
+  date: any
 };
